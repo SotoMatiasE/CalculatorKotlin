@@ -6,7 +6,9 @@
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
 
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="android:colorBackground">@color/grey_900</item>
     </style>
 
     <style name="Theme.Calculator" parent="Base.Theme.Calculator" />
+
 </resources>

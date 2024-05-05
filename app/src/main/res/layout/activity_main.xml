@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/common_padding_min"
         android:textAppearance="?attr/textAppearanceHeadline6"
+        android:textColor="@color/white"
         tools:text="5x2"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
