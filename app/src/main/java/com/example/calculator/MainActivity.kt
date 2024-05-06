@@ -79,10 +79,10 @@ class MainActivity : AppCompatActivity() {
                 val numberTwo = value[1]!!.toDouble()
                 binding.tvResult.text = getResult(numberOne, operator, numberTwo).toString()
             }catch (e: NumberFormatException){
-                Snackbar.make(binding.root, "Exprecion incorrcta", Snackbar.LENGTH_SHORT).show()
+                showMessage()
             }
         }else{
-            Snackbar.make(binding.root, "Exprecion incorrcta", Snackbar.LENGTH_SHORT).show()
+            if (operator != OPERATOR_NULL) showMessage() //SI NO TENGO OPERADORES EN PANTALLA NO NOTIFICA
         }
         /*//Snackbar es similar a Toast
         Snackbar.make(binding.root, "1:$numberOne 2:$numberTwo", Snackbar.LENGTH_SHORT).show()*/
@@ -120,6 +120,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         return result
+    }
+
+    private fun showMessage(){
+        Snackbar.make(binding.root, getString(R.string.message_exp_incorrect), Snackbar.LENGTH_SHORT)
+            .setAnchorView(binding.llTop).show() //setAnchorView(binding.llTop) situa el mensaje arriba de los botones
     }
 
     companion object {
