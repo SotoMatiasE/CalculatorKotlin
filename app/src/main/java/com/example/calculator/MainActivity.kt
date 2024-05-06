@@ -6,6 +6,7 @@ import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.calculator.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 
 
 private lateinit var binding: ActivityMainBinding
@@ -70,11 +71,19 @@ class MainActivity : AppCompatActivity() {
                 value = operationRef.split(operator).toTypedArray()
             }
         }
-        //PROCESAR NUMEROS
-        val numberOne = value[0]!!.toDouble()
-        val numberTwo = value[1]!!.toDouble()
-        binding.tvResult.text = getResult(numberOne, operator, numberTwo).toString()
 
+        if (value.size > 1) {
+            try {
+                //PROCESAR NUMEROS
+                val numberOne = value[0]!!.toDouble()
+                val numberTwo = value[1]!!.toDouble()
+                binding.tvResult.text = getResult(numberOne, operator, numberTwo).toString()
+            }catch (e: NumberFormatException){
+                Snackbar.make(binding.root, "Exprecion incorrcta", Snackbar.LENGTH_SHORT).show()
+            }
+        }else{
+            Snackbar.make(binding.root, "Exprecion incorrcta", Snackbar.LENGTH_SHORT).show()
+        }
         /*//Snackbar es similar a Toast
         Snackbar.make(binding.root, "1:$numberOne 2:$numberTwo", Snackbar.LENGTH_SHORT).show()*/
     }
