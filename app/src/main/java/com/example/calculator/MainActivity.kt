@@ -7,6 +7,7 @@ import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.calculator.databinding.ActivityMainBinding
+import com.google.android.material.snackbar.Snackbar
 
 
 private lateinit var binding: ActivityMainBinding
@@ -26,20 +27,83 @@ class MainActivity : AppCompatActivity() {
         when(view.id){
             R.id.btnDelete -> { //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
                 val length = binding.tvOperation.text.length //AVERIGUA LA LONGITUD ACTUAL DE LA OPERACION
-                val newOperation = binding.tvOperation.text.toString().substring(0, length -1)
-                binding.tvOperation.text = newOperation //asignamos newOperation y elimina el ultimo caracter
+
+                if (length > 0) { //si la long es mayor
+                    val newOperation = binding.tvOperation.text.toString().substring(0, length - 1)
+                    binding.tvOperation.text =
+                        newOperation //asignamos newOperation y elimina el ultimo caracter
+                }
             }
             R.id.btnClear -> { //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
-
+                binding.tvOperation.text = ""
+                binding.tvResult.text = ""
             }
             R.id.btnResult -> { //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
-
+                tryResolve(binding.tvOperation.text.toString())
             }
             //else ESTA PARA QUE IMPRIMA LOS TXT OSEA LOS NUMEROS
             else -> { //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
                 binding.tvOperation.append(valueStr) //append ES UN METODO QUE AÑADE TEXTO AL FINAL EL NUEVO VALOR
             }
         }
+    }
+
+    private fun tryResolve(operationRef: String) {
+        //extrare el operador +,-,*,/
+        val operator = getOperator(operationRef)
+
+        var value = arrayOfNulls<String>(0)
+
+        //PROCESAR NUMEROS
+        value = operationRef.split(operator).toTypedArray()
+
+        val numberOne = value[0]!!.toDouble()
+        val numberTwo = value[1]!!.toDouble()
+
+        binding.tvResult.text = getResult(numberOne, operator, numberTwo).toString()
+
+        /*//Snackbar es similar a Toast
+        Snackbar.make(binding.root, "1:$numberOne 2:$numberTwo", Snackbar.LENGTH_SHORT).show()*/
+    }
+
+    private fun getOperator(operation: String): String {
+        var operator = ""
+
+        if (operation.contains(OPERATOR_MULTI)){
+            operator = OPERATOR_MULTI
+        }else if (operation.contains(OPERATOR_DIV)){
+           operator = OPERATOR_DIV
+        }else if (operation.contains(OPERATOR_SUB)){
+           operator = OPERATOR_SUB
+        }else if (operation.contains(OPERATOR_SUM)){
+           operator = OPERATOR_SUM
+        }
+
+        return operator
+    }
+
+    private fun getResult(numberOne: Double, operator: String, numberTow: Double): Double {
+        var result = 0.0
+
+        when (operator) {
+            OPERATOR_MULTI -> result = numberOne * numberTow
+            OPERATOR_DIV -> result = numberOne / numberTow
+            OPERATOR_SUM -> result = numberOne + numberTow
+            OPERATOR_SUB -> result = numberOne - numberTow
+        }
+
+
+
+        return result
+    }
+
+    companion object {
+        const val OPERATOR_MULTI = "x"
+        const val OPERATOR_DIV = "÷"
+        const val OPERATOR_SUB= "-"
+        const val OPERATOR_SUM = "+"
+        const val OPERATOR_NULL = "null"
+        const val POINT = "."
     }
 }
 
