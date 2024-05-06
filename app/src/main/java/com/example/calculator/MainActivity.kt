@@ -1,13 +1,11 @@
 package com.example.calculator
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.calculator.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
 
 
 private lateinit var binding: ActivityMainBinding
@@ -53,13 +51,28 @@ class MainActivity : AppCompatActivity() {
         val operator = getOperator(operationRef)
 
         var value = arrayOfNulls<String>(0)
-
+        //si el operador es diferente de null vamos a descartar que sea una operacion invalida
+        //es decir que no contenga un operador
+        if (operator != OPERATOR_NULL){
+            //verificamos si es un operador de resta
+            if (operator == OPERATOR_SUB){
+                //extraer el incice del operador -
+                val  index = operationRef.lastIndexOf(OPERATOR_SUB)
+                if (index < operationRef.length-1) { //si index es menor puede dividirse en 2 si no esta incompleta
+                    value = arrayOfNulls(2)
+                    value[0] = operationRef.substring(0, index) //index es la posicion de -
+                    value[1] = operationRef.substring(index+1)
+                }else {
+                    value = arrayOfNulls(1)
+                    value[0] = operationRef.substring(0, index)
+                }
+            }else {
+                value = operationRef.split(operator).toTypedArray()
+            }
+        }
         //PROCESAR NUMEROS
-        value = operationRef.split(operator).toTypedArray()
-
         val numberOne = value[0]!!.toDouble()
         val numberTwo = value[1]!!.toDouble()
-
         binding.tvResult.text = getResult(numberOne, operator, numberTwo).toString()
 
         /*//Snackbar es similar a Toast
@@ -73,10 +86,15 @@ class MainActivity : AppCompatActivity() {
             operator = OPERATOR_MULTI
         }else if (operation.contains(OPERATOR_DIV)){
            operator = OPERATOR_DIV
-        }else if (operation.contains(OPERATOR_SUB)){
-           operator = OPERATOR_SUB
         }else if (operation.contains(OPERATOR_SUM)){
            operator = OPERATOR_SUM
+        }else { //valor por defecto
+            operator = OPERATOR_NULL
+        }
+        /*CON if ESTAMOS VALIDADNDO EL SIGNO NEGATIVO PARA CALCULOS NEGATIVOS. UNICAMENTE SE TOMA EL SEGUNDO - VALIDADNDO
+        EL PRIMERO COMO NULL*/
+        if (operator == OPERATOR_NULL && operation.lastIndexOf(OPERATOR_SUB) > 0){
+            operator = OPERATOR_SUB
         }
 
         return operator
@@ -91,8 +109,6 @@ class MainActivity : AppCompatActivity() {
             OPERATOR_SUM -> result = numberOne + numberTow
             OPERATOR_SUB -> result = numberOne - numberTow
         }
-
-
 
         return result
     }
