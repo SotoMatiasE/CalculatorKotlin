@@ -38,16 +38,25 @@ class MainActivity : AppCompatActivity() {
                 binding.tvResult.text = ""
             }
             R.id.btnResult -> { //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
-                tryResolve(binding.tvOperation.text.toString())
+                tryResolve(binding.tvOperation.text.toString(), true)
+            }
+            //EL CONJUNTO DE BOTONES VAN A DETONAR UN MISMO CODIGO
+            R.id.btnMulti,
+            R.id.btnDiv,
+            R.id.btnSum,
+            R.id.btnSub -> {
+                //el argumento es la operacion previa resuelta
+                tryResolve(binding.tvOperation.text.toString(), false)
+                        binding.tvOperation.append(valueStr)
             }
             //else ESTA PARA QUE IMPRIMA LOS TXT OSEA LOS NUMEROS
-            else -> { //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
+            else -> {
                 binding.tvOperation.append(valueStr) //append ES UN METODO QUE AÑADE TEXTO AL FINAL EL NUEVO VALOR
             }
         }
     }
 
-    private fun tryResolve(operationRef: String) {
+    private fun tryResolve(operationRef: String, isFromResult: Boolean) {
         if (operationRef.isEmpty()){ //si esta vacio retorna para no ejecutar de nuevo
             return
         }
@@ -87,12 +96,20 @@ class MainActivity : AppCompatActivity() {
                 //PROCESAR NUMEROS
                 val numberOne = value[0]!!.toDouble()
                 val numberTwo = value[1]!!.toDouble()
+
+                //ASIGANA EL RESULTADO
                 binding.tvResult.text = getResult(numberOne, operator, numberTwo).toString()
+
+                //COMPROBAMOS SI SE PUEDE COPIAR
+                                  //si no esta vacio   y   si no viene de result
+                if (binding.tvResult.text.isNotEmpty() && !isFromResult){
+                    binding.tvOperation.text = binding.tvResult.text
+                }
             }catch (e: NumberFormatException){
-                showMessage()
+                if (isFromResult) showMessage()
             }
         }else{
-            if (operator != OPERATOR_NULL) showMessage() //SI NO TENGO OPERADORES EN PANTALLA NO NOTIFICA
+            if (isFromResult && operator != OPERATOR_NULL) showMessage() //SI NO TENGO OPERADORES EN PANTALLA NO NOTIFICA
         }
         /*//Snackbar es similar a Toast
         Snackbar.make(binding.root, "1:$numberOne 2:$numberTwo", Snackbar.LENGTH_SHORT).show()*/
