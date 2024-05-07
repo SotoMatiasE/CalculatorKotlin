@@ -39,10 +39,10 @@ class MainActivity : AppCompatActivity() {
         val penultimate = charSequence[charSequence.length - 2].toString()
 
         return (lasElement == OPERATOR_MULTI || lasElement ==
-                OPERATOR_DIV || lasElement == OPERATOR_SUM && (
+                OPERATOR_DIV || lasElement == OPERATOR_SUM) && (
                         penultimate == OPERATOR_MULTI || penultimate == OPERATOR_DIV ||
                         penultimate == OPERATOR_SUM || penultimate == OPERATOR_SUB
-                        ))
+                        )
     }
 
     //ESTE METODO PUBLICO ENVIA PROPIEDAD ONCLICK A LOS XML
@@ -79,10 +79,58 @@ class MainActivity : AppCompatActivity() {
                 val operation = binding.tvOperation.text.toString()
                 addOperator(operator, operation) //esta funcion recibe argumentos de val
             }
+            R.id.btnPoint -> {
+                val operation = binding.tvOperation.text.toString()
+                //validar si se puede agregar punto en un metodo
+                addPoint(valueStr, operation)
+            }
             //else ESTA PARA QUE IMPRIMA LOS TXT OSEA LOS NUMEROS
             else -> {
                 binding.tvOperation.append(valueStr) //append ES UN METODO QUE AÑADE TEXTO AL FINAL EL NUEVO VALOR
             }
+        }
+    }
+
+    private fun addPoint(pointStr: String, operation: String) {
+        if (!operation.contains(POINT)){
+            binding.tvOperation.append(pointStr)
+        } else {
+            val operator = getOperator(operation) //valida donde si debe agregar punto
+
+            var value = arrayOfNulls<String>(0)
+            //si el operador es diferente de null vamos a descartar que sea una operacion invalida
+            //es decir que no contenga un operador
+            if (operator != OPERATOR_NULL){
+                //verificamos si es un operador de resta
+                if (operator == OPERATOR_SUB){
+                    //extraer el incice del operador -
+                    val  index = operation.lastIndexOf(OPERATOR_SUB)
+                    if (index < operation.length-1) { //si index es menor puede dividirse en 2 si no esta incompleta
+                        value = arrayOfNulls(2)
+                        value[0] = operation.substring(0, index) //index es la posicion de -
+                        value[1] = operation.substring(index+1)
+                    }else {
+                        value = arrayOfNulls(1)
+                        value[0] = operation.substring(0, index)
+                    }
+                }else {
+                    value = operation.split(operator).toTypedArray()
+                }
+            }
+            if (value.size > 0){
+                val numberOne = value[0]!!
+                if (value.size > 1){
+                    val numberTwo = value[1]!!
+                    if (numberOne.contains(POINT) && !numberTwo.contains(POINT)){
+                        binding.tvOperation.append(pointStr)
+                    }
+                }else {
+                    if (numberOne.contains(POINT)){
+                        binding.tvOperation.append(pointStr)
+                    }
+                }
+            }
+
         }
     }
 
