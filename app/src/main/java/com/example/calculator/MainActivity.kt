@@ -48,6 +48,16 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun tryResolve(operationRef: String) {
+        if (operationRef.isEmpty()){ //si esta vacio retorna para no ejecutar de nuevo
+            return
+        }
+
+        var operation = operationRef //HACEMOS ESTO POR SI HAY UN PUNTO AL FINAL QUITARLO
+        //quita el punto que estes ubicado al final de un valor
+        if (operation.contains(POINT) && operation.lastIndexOf(POINT) == operation.length -1) {
+            operation = operation.substring(0, operation.length -1)
+        }
+
         //extrare el operador +,-,*,/
         val operator = getOperator(operationRef)
 
@@ -58,17 +68,17 @@ class MainActivity : AppCompatActivity() {
             //verificamos si es un operador de resta
             if (operator == OPERATOR_SUB){
                 //extraer el incice del operador -
-                val  index = operationRef.lastIndexOf(OPERATOR_SUB)
-                if (index < operationRef.length-1) { //si index es menor puede dividirse en 2 si no esta incompleta
+                val  index = operation.lastIndexOf(OPERATOR_SUB)
+                if (index < operation.length-1) { //si index es menor puede dividirse en 2 si no esta incompleta
                     value = arrayOfNulls(2)
-                    value[0] = operationRef.substring(0, index) //index es la posicion de -
-                    value[1] = operationRef.substring(index+1)
+                    value[0] = operation.substring(0, index) //index es la posicion de -
+                    value[1] = operation.substring(index+1)
                 }else {
                     value = arrayOfNulls(1)
                     value[0] = operationRef.substring(0, index)
                 }
             }else {
-                value = operationRef.split(operator).toTypedArray()
+                value = operation.split(operator).toTypedArray()
             }
         }
 
