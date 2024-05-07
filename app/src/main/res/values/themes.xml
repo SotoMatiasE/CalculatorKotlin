@@ -8,7 +8,8 @@
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
         <item name="android:colorBackground">@color/grey_900</item>
 
-
+        <!--SHAPE-->
+        <item name="shapeAppearanceSmallComponent">@style/ShapeAppearance.MyTheme.SmallComponent</item>
     </style>
 
     <style name="Theme.Calculator" parent="Base.Theme.Calculator" />
