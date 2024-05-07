@@ -10,33 +10,25 @@
 
     <TextView
         android:id="@+id/tvOperation"
-        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="@dimen/common_padding_min"
         android:textAppearance="?attr/textAppearanceHeadline6"
-        android:textColor="@color/white"
-        android:background="?colorOnSurface"
         tools:text="5x2"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintTop_toTopOf="parent"
+        style="@style/MyTextView"
+        tools:ignore="MissingConstraints"/>
 
     <!--ESTE TEXTVIEW VA A MOSTRAR EL RESULTADO-->
     <TextView
         android:id="@+id/tvResult"
-        android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="@dimen/common_padding_min"
         android:textAppearance="?attr/textAppearanceHeadline3"
-        android:textColor="@color/white"
-        android:background="?colorOnSurface"
         android:gravity="center_vertical|end"
         android:layout_marginBottom="@dimen/common_padding_min"
         tools:text="10.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tvOperation"
-        app:layout_constraintBottom_toTopOf="@+id/llTop"/>
+        app:layout_constraintBottom_toTopOf="@+id/llTop"
+        style="@style/MyTextView"
+        tools:ignore="MissingConstraints"/>
 
     <!--LOS LINEARLAYOUT SE UBICAN UNO ARRIBA DEL OTRO VAN A SER BOTONES-->
     <LinearLayout
