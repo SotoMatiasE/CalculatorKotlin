@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
         binding.tvOperation.run {
             addTextChangedListener { charSequence ->
                 //reemplazar el operador siempre que sea posble
-                if (canReplaceOperator(charSequence.toString())) {
+                if (Operaciones.canReplaceOperator(charSequence.toString())) {
                     //extraer antes del operador y concatenarlo con el ultimo char
                     val newStr = "${text.substring(0, text.length - 2)}${
                         text.substring(text.length - 1)
@@ -32,18 +32,6 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
-    }
-
-    private fun canReplaceOperator(charSequence: CharSequence): Boolean {
-        if (charSequence.length < 2) return false
-        val lasElement = charSequence[charSequence.length - 1].toString()
-        val penultimate = charSequence[charSequence.length - 2].toString()
-
-        return (lasElement == Constantes.OPERATOR_MULTI || lasElement ==
-                Constantes.OPERATOR_DIV || lasElement == Constantes.OPERATOR_SUM) && (
-                        penultimate == Constantes.OPERATOR_MULTI || penultimate == Constantes.OPERATOR_DIV ||
-                        penultimate == Constantes.OPERATOR_SUM || penultimate == Constantes.OPERATOR_SUB
-                        )
     }
 
     //ESTE METODO PUBLICO ENVIA PROPIEDAD ONCLICK A LOS XML
@@ -90,7 +78,7 @@ class MainActivity : AppCompatActivity() {
         if (!operation.contains(Constantes.POINT)){
             binding.tvOperation.append(pointStr)
         } else {
-            val operator = getOperator(operation) //valida donde si debe agregar punto
+            val operator = Operaciones.getOperator(operation) //valida donde si debe agregar punto
 
             var value = arrayOfNulls<String>(0)
             //si el operador es diferente de null vamos a descartar que sea una operacion invalida
@@ -158,7 +146,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         //extrare el operador +,-,*,/
-        val operator = getOperator(operationRef)
+        val operator = Operaciones.getOperator(operationRef)
 
         var value = arrayOfNulls<String>(0)
         //si el operador es diferente de null vamos a descartar que sea una operacion invalida
@@ -205,27 +193,6 @@ class MainActivity : AppCompatActivity() {
         Snackbar.make(binding.root, "1:$numberOne 2:$numberTwo", Snackbar.LENGTH_SHORT).show()*/
     }
 
-    private fun getOperator(operation: String): String {
-        var operator = ""
-
-        if (operation.contains(Constantes.OPERATOR_MULTI)){
-            operator = Constantes.OPERATOR_MULTI
-        }else if (operation.contains(Constantes.OPERATOR_DIV)){
-           operator = Constantes.OPERATOR_DIV
-        }else if (operation.contains(Constantes.OPERATOR_SUM)){
-           operator = Constantes.OPERATOR_SUM
-        }else { //valor por defecto
-            operator = Constantes.OPERATOR_NULL
-        }
-        /*CON if ESTAMOS VALIDADNDO EL SIGNO NEGATIVO PARA CALCULOS NEGATIVOS. UNICAMENTE SE TOMA EL SEGUNDO - VALIDADNDO
-        EL PRIMERO COMO NULL*/
-        if (operator == Constantes.OPERATOR_NULL && operation.lastIndexOf(Constantes.OPERATOR_SUB) > 0){
-            operator = Constantes.OPERATOR_SUB
-        }
-
-        return operator
-    }
-
     private fun getResult(numberOne: Double, operator: String, numberTow: Double): Double {
         var result = 0.0
 
@@ -235,7 +202,6 @@ class MainActivity : AppCompatActivity() {
             Constantes.OPERATOR_SUM -> result = numberOne + numberTow
             Constantes.OPERATOR_SUB -> result = numberOne - numberTow
         }
-
         return result
     }
 
