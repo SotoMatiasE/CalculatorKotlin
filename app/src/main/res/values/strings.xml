@@ -18,4 +18,5 @@
     <string name="calc_btn_clear">CLEAR</string>
     <string name="calc_btn_div">÷</string>
     <string name="message_exp_incorrect">Exprecion incorrcta</string>
+    <string name="message_num_incorrect">Revise los numeros</string>
 </resources>
