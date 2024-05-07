@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import com.example.calculator.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
+import java.util.Locale
 
 
 private lateinit var binding: ActivityMainBinding
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
         when(view.id){
             R.id.btnDelete -> { //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
                 binding.tvOperation.run {
-                    if (text.length > 0) text = operation.substring(0, text.length - 1)
+                    if (text.isNotEmpty()) text = operation.substring(0, text.length - 1)
                 //AVERIGUA LA LONGITUD ACTUAL DE LA OPERACION asignamos y elimina el ultimo caracter
                 }
             }
@@ -79,27 +80,9 @@ class MainActivity : AppCompatActivity() {
         } else {
             val operator = Operaciones.getOperator(operation) //valida donde si debe agregar punto
 
-            var value = arrayOfNulls<String>(0)
-            //si el operador es diferente de null vamos a descartar que sea una operacion invalida
-            //es decir que no contenga un operador
-            if (operator != Constantes.OPERATOR_NULL){
-                //verificamos si es un operador de resta
-                if (operator == Constantes.OPERATOR_SUB){
-                    //extraer el incice del operador -
-                    val  index = operation.lastIndexOf(Constantes.OPERATOR_SUB)
-                    if (index < operation.length-1) { //si index es menor puede dividirse en 2 si no esta incompleta
-                        value = arrayOfNulls(2)
-                        value[0] = operation.substring(0, index) //index es la posicion de -
-                        value[1] = operation.substring(index+1)
-                    }else {
-                        value = arrayOfNulls(1)
-                        value[0] = operation.substring(0, index)
-                    }
-                }else {
-                    value = operation.split(operator).toTypedArray()
-                }
-            }
-            if (value.size > 0){
+            val value = Operaciones.divideOperation(operator, operation)
+
+            if (value.isNotEmpty()){
                 val numberOne = value[0]!!
                 if (value.size > 1){
                     val numberTwo = value[1]!!
@@ -114,29 +97,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun checkOrResolve(operation: String, isFromResult: Boolean){
-        Operaciones.tryResolve(operation, isFromResult, object : OnResolveListener{
-            override fun onShowResult(result: Double) {
-                //ASIGANA EL RESULTADO
-                binding.tvResult.text = result.toString()
-
-                //COMPROBAMOS SI SE PUEDE COPIAR
-                //si no esta vacio   y   si no viene de result
-                if (binding.tvResult.text.isNotEmpty() && !isFromResult){
-                    binding.tvOperation.text = binding.tvResult.text
-                }
-            }
-            override fun onShowMessage(errorRes: Int) {
-                showMessage()
-            }
-        })
-
-        showMessage()
-
-        showMessage()
-    }
-
     /*ESTE METODO AYUDA A VALIDAR LOS CASOS DONDE ES POSIBLE AÑADIR EL OPERADOR QUE INTENTAMOS AGREGAR
     A LA OPERACION ACTUAL*/
     private fun addOperator(operator: String, operation: String) {
@@ -149,13 +109,30 @@ class MainActivity : AppCompatActivity() {
                 binding.tvOperation.append(operator)
             }
         } else{
-                if (!operation.isEmpty() && lastElement != Constantes.POINT){
+                if (operation.isNotEmpty() && lastElement != Constantes.POINT){
                     binding.tvOperation.append(operator)
                 }
         }
     }
-    private fun showMessage(){
-        Snackbar.make(binding.root, getString(R.string.message_exp_incorrect), Snackbar.LENGTH_SHORT)
+    private fun checkOrResolve(operation: String, isFromResult: Boolean){
+        Operaciones.tryResolve(operation, isFromResult, object : OnResolveListener{
+            override fun onShowResult(result: Double) {
+                //ASIGANA EL RESULTADO
+                binding.tvResult.text = String.format(Locale.ROOT, "%.2f", result) //"%.2f" deja 2 decimales
+
+                //COMPROBAMOS SI SE PUEDE COPIAR
+                //si no esta vacio   y   si no viene de result
+                if (binding.tvResult.text.isNotEmpty() && !isFromResult){
+                    binding.tvOperation.text = binding.tvResult.text
+                }
+            }
+            override fun onShowMessage(errorRes: Int) {
+                showMessage(errorRes)
+            }
+        })
+    }
+    private fun showMessage(errorRes: Int){
+        Snackbar.make(binding.root, errorRes, Snackbar.LENGTH_SHORT)
             .setAnchorView(binding.llTop).show() //setAnchorView(binding.llTop) situa el mensaje arriba de los botones
     }
     

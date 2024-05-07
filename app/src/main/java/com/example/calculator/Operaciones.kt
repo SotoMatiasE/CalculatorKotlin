@@ -3,16 +3,14 @@ package com.example.calculator
 class Operaciones {
     companion object{
         fun getOperator(operation: String): String { //obtenemos el operador de la vista
-            var operator = ""
-
-            if (operation.contains(Constantes.OPERATOR_MULTI)){
-                operator = Constantes.OPERATOR_MULTI
+            var operator = if (operation.contains(Constantes.OPERATOR_MULTI)){
+                Constantes.OPERATOR_MULTI
             }else if (operation.contains(Constantes.OPERATOR_DIV)){
-                operator = Constantes.OPERATOR_DIV
+                Constantes.OPERATOR_DIV
             }else if (operation.contains(Constantes.OPERATOR_SUM)){
-                operator = Constantes.OPERATOR_SUM
+                Constantes.OPERATOR_SUM
             }else { //valor por defecto
-                operator = Constantes.OPERATOR_NULL
+                Constantes.OPERATOR_NULL
             }
             /*CON if ESTAMOS VALIDADNDO EL SIGNO NEGATIVO PARA CALCULOS NEGATIVOS. UNICAMENTE SE TOMA EL SEGUNDO - VALIDADNDO
             EL PRIMERO COMO NULL*/
@@ -38,7 +36,6 @@ class Operaciones {
             if (operationRef.isEmpty()){ //si esta vacio retorna para no ejecutar de nuevo
                 return
             }
-
             var operation = operationRef //HACEMOS ESTO POR SI HAY UN PUNTO AL FINAL QUITARLO
             //quita el punto que estes ubicado al final de un valor
             if (operation.contains(Constantes.POINT) && operation.lastIndexOf(Constantes.POINT) == operation.length -1) {
@@ -48,26 +45,7 @@ class Operaciones {
             //extrare el operador +,-,*,/
             val operator = getOperator(operationRef)
 
-            var value = arrayOfNulls<String>(0)
-            //si el operador es diferente de null vamos a descartar que sea una operacion invalida
-            //es decir que no contenga un operador
-            if (operator != Constantes.OPERATOR_NULL){
-                //verificamos si es un operador de resta
-                if (operator == Constantes.OPERATOR_SUB){
-                    //extraer el incice del operador -
-                    val  index = operation.lastIndexOf(Constantes.OPERATOR_SUB)
-                    if (index < operation.length-1) { //si index es menor puede dividirse en 2 si no esta incompleta
-                        value = arrayOfNulls(2)
-                        value[0] = operation.substring(0, index) //index es la posicion de -
-                        value[1] = operation.substring(index+1)
-                    }else {
-                        value = arrayOfNulls(1)
-                        value[0] = operationRef.substring(0, index)
-                    }
-                }else {
-                    value = operation.split(operator).toTypedArray()
-                }
-            }
+            val value = divideOperation(operator, operation)
 
             if (value.size > 1) {
                 try {
@@ -88,17 +66,38 @@ class Operaciones {
             Snackbar.make(binding.root, "1:$numberOne 2:$numberTwo", Snackbar.LENGTH_SHORT).show()*/
         }
 
-
-        fun getResult(numberOne: Double, operator: String, numberTow: Double): Double {
-            var result = 0.0
-
-            when (operator) {
-                Constantes.OPERATOR_MULTI -> result = numberOne * numberTow
-                Constantes.OPERATOR_DIV -> result = numberOne / numberTow
-                Constantes.OPERATOR_SUM -> result = numberOne + numberTow
-                Constantes.OPERATOR_SUB -> result = numberOne - numberTow
+        fun divideOperation(operator: String, operation: String): Array<String?> {
+            var value = arrayOfNulls<String>(0)
+            //si el operador es diferente de null vamos a descartar que sea una operacion invalida
+            //es decir que no contenga un operador
+            if (operator != Constantes.OPERATOR_NULL){
+                //verificamos si es un operador de resta
+                if (operator == Constantes.OPERATOR_SUB){
+                    //extraer el incice del operador -
+                    val  index = operation.lastIndexOf(Constantes.OPERATOR_SUB)
+                    if (index < operation.length-1) { //si index es menor puede dividirse en 2 si no esta incompleta
+                        value = arrayOfNulls(2)
+                        value[0] = operation.substring(0, index) //index es la posicion de -
+                        value[1] = operation.substring(index+1)
+                    }else {
+                        value = arrayOfNulls(1)
+                        value[0] = operation.substring(0, index)
+                    }
+                }else {
+                    value = operation.split(operator).dropLastWhile { it == "" }.toTypedArray()
+                }
             }
-            return result
+            return value
+        }
+
+
+        private fun getResult(numberOne: Double, operator: String, numberTow: Double): Double {
+            return when (operator) {
+                Constantes.OPERATOR_MULTI -> numberOne * numberTow
+                Constantes.OPERATOR_DIV -> numberOne / numberTow
+                Constantes.OPERATOR_SUM -> numberOne + numberTow
+                else -> numberOne - numberTow //Constantes.OPERATOR_SUB
+            }
         }
     }
 }
