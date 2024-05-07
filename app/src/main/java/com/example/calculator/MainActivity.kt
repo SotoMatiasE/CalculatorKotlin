@@ -19,20 +19,21 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //podemos detectar los cambios en tiempo real
-        binding.tvOperation.addTextChangedListener { charSequence ->
-            //reemplazar el operador siempre que sea posble
-            if (canReplaceOperator(charSequence.toString())){
-                val length = binding.tvOperation.text.length
-                //extraer antes del operador y concatenarlo con el ultimo char
-                val newOperation = binding.tvOperation.text.toString().substring(0, length - 2) +
-                    binding.tvOperation.text.toString().substring(length -1)
-                binding.tvOperation.text = newOperation
-
+        //podemos detectar los cambios en tiempo real y pregunta si es reemplazable el operador
+        binding.tvOperation.run {
+            addTextChangedListener { charSequence ->
+                //reemplazar el operador siempre que sea posble
+                if (canReplaceOperator(charSequence.toString())) {
+                    //extraer antes del operador y concatenarlo con el ultimo char
+                    val newStr = "${text.substring(0, text.length - 2)}${
+                        text.substring(text.length - 1)
+                    }"
+                    text = newStr
+                }
             }
         }
-
     }
+
     private fun canReplaceOperator(charSequence: CharSequence): Boolean {
         if (charSequence.length < 2) return false
         val lasElement = charSequence[charSequence.length - 1].toString()
@@ -48,46 +49,40 @@ class MainActivity : AppCompatActivity() {
     //ESTE METODO PUBLICO ENVIA PROPIEDAD ONCLICK A LOS XML
     fun onClickButton(view: View){
         val valueStr = (view as Button).text.toString()
-    //ESTO VA A EVALIAR LA VISTA QUE CORRESPONDE AL BOTON PULSADO
+        val operation = binding.tvOperation.text.toString()
+
+    //ESTO VA A EVALUAR LA VISTA QUE CORRESPONDE AL BOTON PULSADO
         when(view.id){
             R.id.btnDelete -> { //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
-                val length = binding.tvOperation.text.length //AVERIGUA LA LONGITUD ACTUAL DE LA OPERACION
-
-                if (length > 0) { //si la long es mayor
-                    val newOperation = binding.tvOperation.text.toString().substring(0, length - 1)
-                    binding.tvOperation.text =
-                        newOperation //asignamos newOperation y elimina el ultimo caracter
+                binding.tvOperation.run {
+                    if (text.length > 0) text = operation.substring(0, text.length - 1)
+                //AVERIGUA LA LONGITUD ACTUAL DE LA OPERACION asignamos y elimina el ultimo caracter
                 }
             }
             R.id.btnClear -> { //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
                 binding.tvOperation.text = ""
                 binding.tvResult.text = ""
             }
-            R.id.btnResult -> { //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
-                tryResolve(binding.tvOperation.text.toString(), true)
-            }
+            //RECORDAR QUE LA FLECHA ES PARA ABRIR UN NUEVO BLOQUE DE CODIGO
+            R.id.btnResult ->  tryResolve(operation, true)
+
             //EL CONJUNTO DE BOTONES VAN A DETONAR UN MISMO CODIGO
             R.id.btnMulti,
             R.id.btnDiv,
             R.id.btnSum,
             R.id.btnSub -> {
                 //el argumento es la operacion previa resuelta
-                tryResolve(binding.tvOperation.text.toString(), false)
+                tryResolve(operation, false)
 
                 //AGREGAR OPERADOR EN CASO DE SER VALIDO
                 val operator = valueStr
-                val operation = binding.tvOperation.text.toString()
                 addOperator(operator, operation) //esta funcion recibe argumentos de val
             }
-            R.id.btnPoint -> {
-                val operation = binding.tvOperation.text.toString()
-                //validar si se puede agregar punto en un metodo
-                addPoint(valueStr, operation)
-            }
+            //validar si se puede agregar punto en un metodo
+            R.id.btnPoint -> addPoint(valueStr, operation)
+
             //else ESTA PARA QUE IMPRIMA LOS TXT OSEA LOS NUMEROS
-            else -> {
-                binding.tvOperation.append(valueStr) //append ES UN METODO QUE AÑADE TEXTO AL FINAL EL NUEVO VALOR
-            }
+            else -> binding.tvOperation.append(valueStr) //append ES UN METODO QUE AÑADE TEXTO AL FINAL EL NUEVO VALOR
         }
     }
 
