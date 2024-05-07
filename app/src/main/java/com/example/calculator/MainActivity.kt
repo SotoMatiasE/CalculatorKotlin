@@ -5,18 +5,44 @@ import android.view.View
 import android.widget.Button
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.addTextChangedListener
 import com.example.calculator.databinding.ActivityMainBinding
 import com.google.android.material.snackbar.Snackbar
 
 
 private lateinit var binding: ActivityMainBinding
 class MainActivity : AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        //podemos detectar los cambios en tiempo real
+        binding.tvOperation.addTextChangedListener { charSequence ->
+            //reemplazar el operador siempre que sea posble
+            if (canReplaceOperator(charSequence.toString())){
+                val length = binding.tvOperation.text.length
+                //extraer antes del operador y concatenarlo con el ultimo char
+                val newOperation = binding.tvOperation.text.toString().substring(0, length - 2) +
+                    binding.tvOperation.text.toString().substring(length -1)
+                binding.tvOperation.text = newOperation
+
+            }
+        }
+
+    }
+    private fun canReplaceOperator(charSequence: CharSequence): Boolean {
+        if (charSequence.length < 2) return false
+        val lasElement = charSequence[charSequence.length - 1].toString()
+        val penultimate = charSequence[charSequence.length - 2].toString()
+
+        return (lasElement == OPERATOR_MULTI || lasElement ==
+                OPERATOR_DIV || lasElement == OPERATOR_SUM && (
+                        penultimate == OPERATOR_MULTI || penultimate == OPERATOR_DIV ||
+                        penultimate == OPERATOR_SUM || penultimate == OPERATOR_SUB
+                        ))
     }
 
     //ESTE METODO PUBLICO ENVIA PROPIEDAD ONCLICK A LOS XML
@@ -52,9 +78,6 @@ class MainActivity : AppCompatActivity() {
                 val operator = valueStr
                 val operation = binding.tvOperation.text.toString()
                 addOperator(operator, operation) //esta funcion recibe argumentos de val
-
-
-            //binding.tvOperation.append(valueStr)
             }
             //else ESTA PARA QUE IMPRIMA LOS TXT OSEA LOS NUMEROS
             else -> {
@@ -71,7 +94,9 @@ class MainActivity : AppCompatActivity() {
 
         //VERIFICAR SI ES UNA RESTA O NO
         if (operator == OPERATOR_SUB){
-
+            if (operation.isEmpty() || lastElement != OPERATOR_SUB && lastElement != POINT){
+                binding.tvOperation.append(operator)
+            }
         } else{
                 if (!operation.isEmpty() && lastElement != POINT){
                     binding.tvOperation.append(operator)
