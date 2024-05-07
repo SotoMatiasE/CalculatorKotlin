@@ -47,12 +47,35 @@ class MainActivity : AppCompatActivity() {
             R.id.btnSub -> {
                 //el argumento es la operacion previa resuelta
                 tryResolve(binding.tvOperation.text.toString(), false)
-                        binding.tvOperation.append(valueStr)
+
+                //AGREGAR OPERADOR EN CASO DE SER VALIDO
+                val operator = valueStr
+                val operation = binding.tvOperation.text.toString()
+                addOperator(operator, operation) //esta funcion recibe argumentos de val
+
+
+            //binding.tvOperation.append(valueStr)
             }
             //else ESTA PARA QUE IMPRIMA LOS TXT OSEA LOS NUMEROS
             else -> {
                 binding.tvOperation.append(valueStr) //append ES UN METODO QUE AÑADE TEXTO AL FINAL EL NUEVO VALOR
             }
+        }
+    }
+
+    /*ESTE METODO AYUDA A VALIDAR LOS CASOS DONDE ES POSIBLE AÑADIR EL OPERADOR QUE INTENTAMOS AGREGAR
+    A LA OPERACION ACTUAL*/
+    private fun addOperator(operator: String, operation: String) {
+        //EXTRAER ULTIMO ELEMENTO ANTES DEL OPERADOR
+        val lastElement = if(operation.isEmpty())"" else operation.substring(operation.length -1)
+
+        //VERIFICAR SI ES UNA RESTA O NO
+        if (operator == OPERATOR_SUB){
+
+        } else{
+                if (!operation.isEmpty() && lastElement != POINT){
+                    binding.tvOperation.append(operator)
+                }
         }
     }
 
